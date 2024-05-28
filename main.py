@@ -2,18 +2,22 @@ import json
 import time
 from urllib import parse
 # import pandas as pd
-from bs4 import BeautifulSoup
 from selenium import webdriver
+from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
+from selenium_stealth import stealth
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import requests
 
-
-
 BASE_URL = 'https://megamarket.ru'
 
+
 def get_pagees_html(url):
+    """
+    Получаю url проверяю доступность сайта, загружаю нужные параметры
+    """
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -22,29 +26,22 @@ def get_pagees_html(url):
     # options.add_argument("--disable-blink-features=AutomationControlled")
     # options.add_argument('--headless')
     options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome(options=options)
-    stealth(driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-            )
-    driver.get(url)
-
-    response = requests.get(url)
-    print(response.status_code)
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-
-    with webdriver.Chrome() as driver:
+    with webdriver.Chrome(options) as driver:
+        stealth(driver,
+                languages=["en-US", "en"],
+                vendor="Google Inc.",
+                platform="Win32",
+                webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine",
+                fix_hairline=True,
+                )
         driver.get(url)
-        time.sleep(1)
-        p_tags = driver.find_element(By.ID, "scroll-container").find_elements(By.TAG_NAME, "p")
+        return driver
+
 
 def get_items(html, items):
     pass
+
 
 def save_excel(data: list, filename: str):
     pass
