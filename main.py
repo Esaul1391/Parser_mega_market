@@ -14,40 +14,10 @@ import requests
 BASE_URL = 'https://megamarket.ru'
 
 
-def get_pagees_html(url):
+def get_target_url():
     """
-    Получаю url проверяю доступность сайта, загружаю нужные параметры
+    Добавить поиск слов с пробелами
     """
-    options = webdriver.ChromeOptions()
-    options.add_argument("start-maximized")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    # options.add_argument(f"user-agent={useragent.random}")
-    # options.add_argument("--disable-blink-features=AutomationControlled")
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    with webdriver.Chrome(options) as driver:
-        stealth(driver,
-                languages=["en-US", "en"],
-                vendor="Google Inc.",
-                platform="Win32",
-                webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine",
-                fix_hairline=True,
-                )
-        driver.get(url)
-        return driver
-
-
-def get_items(html, items):
-    pass
-
-
-def save_excel(data: list, filename: str):
-    pass
-
-
-def main():
     # target = input('Введите название товара: ')
     # min_price = input('Какая минимальная цена на товар')
     # min_price = min_price if min_price != '' else '0'
@@ -67,8 +37,66 @@ def main():
         json_data = json.dumps(filter_price_count)
         url_encode_data = parse.quote(json_data)
         target_url += '#?filters=' + url_encode_data
+    return target_url
+
+
+def get_pages_html(url):
+    """
+    Получаю url, проверяю доступность сайта, загружаю нужные параметры
+    """
+    options = Options()
+    options.add_argument("start-maximized")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    # options.add_argument(f"user-agent={useragent.random}")
+    # options.add_argument("--disable-blink-features=AutomationControlled")
+    # options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+
+    driver = webdriver.Chrome(options=options)
+
+    stealth(driver,
+            languages=["en-US", "en"],
+            vendor="Google Inc.",
+            platform="Win32",
+            webgl_vendor="Intel Inc.",
+            renderer="Intel Iris OpenGL Engine",
+            fix_hairline=True,
+            )
+    driver.get(url)
+    return driver
+
+
+def parse_page(driver):
+    pagination_frame = driver.find_element(By.TAG_NAME, 'body')
+
+    # scroll_to_element(driver, pagination_frame)
+    time.sleep(1)
+
+def get_items(html, items):
+    pass
+
+
+def save_excel(data: list, filename: str):
+    pass
+
+
+def scroll_to_element(driver, element):
+    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    # driver.execute_script("arguments[0].scrollIntoView();", element)
+
+    actions = ActionChains(driver)
+    actions.move_to_element(element)
+    actions.perform()
+
+
+def main():
+    target_url = get_target_url()
     print(target_url)
-    items = get_pagees_html(url=target_url)
+    get_driver = get_pages_html(target_url)
+    parse_page(get_driver)
+    time.sleep(1)
 
 
 if __name__ == "__main__":
