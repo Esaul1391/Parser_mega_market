@@ -37,12 +37,13 @@ def get_target_url():
         json_data = json.dumps(filter_price_count)
         url_encode_data = parse.quote(json_data)
         target_url += '#?filters=' + url_encode_data
+        print(target_url)
     return target_url
 
 
 def get_pages_html(url):
     """
-    Получаю url, проверяю доступность сайта, загружаю нужные параметры
+    Инициализирую WebDriver и открываю страницу
     """
     options = Options()
     options.add_argument("start-maximized")
@@ -55,18 +56,20 @@ def get_pages_html(url):
 
     # with webdriver.Chrome(options=options) as driver:
     # driver = webdriver.Chrome(options=options)
-    driver = webdriver.Chrome(options=options)
-
-    stealth(driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-            )
-    driver.get(url)
-    return driver
+    try:
+        driver = webdriver.Chrome(options=options)
+        stealth(driver,
+                languages=["en-US", "en"],
+                vendor="Google Inc.",
+                platform="Win32",
+                webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine",
+                fix_hairline=True,
+                )
+        driver.get(url)
+        return driver
+    except Exception as e:
+        print(f"Ошибка в инициализации WebDriver: {e}")
 
 
 def parse_page(driver):
@@ -75,6 +78,9 @@ def parse_page(driver):
     print(pagination_frame.text)
     scroll_to_element(driver, pagination_frame)
     time.sleep(1)
+    pagination_clik = driver.find_element(By.CLASS_NAME, 'svg-icon')
+    pagination_clik.click()
+    time.sleep(2)
 
 
 def get_items(html, items):
