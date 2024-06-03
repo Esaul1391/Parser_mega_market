@@ -53,6 +53,8 @@ def get_pages_html(url):
     # options.add_argument('--headless')
     options.add_argument('--no-sandbox')
 
+    # with webdriver.Chrome(options=options) as driver:
+    # driver = webdriver.Chrome(options=options)
     driver = webdriver.Chrome(options=options)
 
     stealth(driver,
@@ -68,16 +70,25 @@ def get_pages_html(url):
 
 
 def parse_page(driver):
-    pagination_frame = driver.find_element(By.TAG_NAME, 'body')
+    pagination_frame = driver.find_element(By.CLASS_NAME, 'full')
 
-    # scroll_to_element(driver, pagination_frame)
+    print(pagination_frame.text)
+    scroll_to_element(driver, pagination_frame)
     time.sleep(1)
+
 
 def get_items(html, items):
     pass
 
 
 def save_excel(data: list, filename: str):
+    pass
+
+
+def repeat_func():
+    """
+    Декоратор, который повторяет запуск скрипта указанное количество раз
+    """
     pass
 
 
@@ -89,6 +100,7 @@ def scroll_to_element(driver, element):
     actions = ActionChains(driver)
     actions.move_to_element(element)
     actions.perform()
+    time.sleep(4)
 
 
 def main():
@@ -97,6 +109,9 @@ def main():
     get_driver = get_pages_html(target_url)
     parse_page(get_driver)
     time.sleep(1)
+    get_driver.quit()
+
+
 
 
 if __name__ == "__main__":
