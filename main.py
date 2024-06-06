@@ -26,7 +26,7 @@ def get_target_url():
     target = 'lada_granta'
     min_price = '10'
     min_price = min_price if min_price != '' else '0'
-    max_price = '20000'
+    max_price = '1000'
     max_price = max_price if max_price != '' else '999999'
     target_url = f'{BASE_URL}/catalog/page_num/?q={target}'
     if max_price and min_price and (max_price.isdigit() and min_price.isdigit()):
@@ -73,14 +73,27 @@ def get_pages_html(url):
 
 
 def parse_page(driver):
-    pagination_frame = driver.find_element(By.CLASS_NAME, 'full')
+    while True:
+        pagination_frame = driver.find_element(By.CLASS_NAME, 'full')
+        scroll_to_element(driver, pagination_frame)
+        time.sleep(1)
+        body = driver.find_element(By.CLASS_NAME, 'catalog-items-list')
+        # carts = body.find_elements(By.CLASS_NAME, 'catalog-item-regular-desktop ddl_product catalog-item-desktop')
+        # print(len(carts))
+        # for cart in carts:
+        #     price = cart.find_element(By.CLASS_NAME, 'catalog-item-regular-desktop__price')
+        #     print(price.text)
+        try:
+            pagination_clik = driver.find_element(By.CLASS_NAME, 'next')
+            if not pagination_clik.is_enabled():
+                print('последняя страница')
+                break
+            pagination_clik.click()
+            time.sleep(1)
+        except Exception:
+            print('Конец')
+            break
 
-    print(pagination_frame.text)
-    scroll_to_element(driver, pagination_frame)
-    time.sleep(1)
-    pagination_clik = driver.find_element(By.CLASS_NAME, 'svg-icon')
-    pagination_clik.click()
-    time.sleep(2)
 
 
 def get_items(html, items):
@@ -99,14 +112,9 @@ def repeat_func():
 
 
 def scroll_to_element(driver, element):
-    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-    # driver.execute_script("arguments[0].scrollIntoView();", element)
-
     actions = ActionChains(driver)
     actions.move_to_element(element)
     actions.perform()
-    time.sleep(4)
 
 
 def main():
@@ -116,8 +124,6 @@ def main():
     parse_page(get_driver)
     time.sleep(1)
     get_driver.quit()
-
-
 
 
 if __name__ == "__main__":
