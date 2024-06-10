@@ -73,16 +73,32 @@ def get_pages_html(url):
 
 
 def parse_page(driver):
-    while True:
+
+    # while True:
+    for i in range(1):
         pagination_frame = driver.find_element(By.CLASS_NAME, 'full')
         scroll_to_element(driver, pagination_frame)
         time.sleep(1)
         body = driver.find_element(By.CLASS_NAME, 'catalog-items-list')
-        # carts = body.find_elements(By.CLASS_NAME, 'catalog-item-regular-desktop ddl_product catalog-item-desktop')
-        # print(len(carts))
-        # for cart in carts:
-        #     price = cart.find_element(By.CLASS_NAME, 'catalog-item-regular-desktop__price')
-        #     print(price.text)
+        print()
+        carts = body.find_elements(By.CSS_SELECTOR, '.catalog-item-regular-desktop')
+        len(carts)
+        for cart in carts:
+            name = cart.find_element(By.CSS_SELECTOR, '[data-test="product-name-link"]').text
+            price = cart.find_element(By.CSS_SELECTOR, '[data-test="product-price"]').text
+            link = cart.find_element(By.CSS_SELECTOR, '[data-test="product-name-link"]').get_attribute('href')
+            try:
+                discount = cart.find_element(By.CSS_SELECTOR, '[data-test="bonus-percent"]').text
+            except:
+                discount = 'Скидка отсутствует'
+
+            try:
+                bonus = cart.find_element(By.CSS_SELECTOR, '[data-test="bonus-amount"]').text
+            except:
+                bonus = 'Бонусы отсутствуют'
+            print("*" * 10, name, price, discount, bonus, link)
+            # name = cart.find_element(By.CLASS_NAME, '.catalog-item-regular-desktop__title-link')
+            # print(name.text)
         try:
             pagination_clik = driver.find_element(By.CLASS_NAME, 'next')
             if not pagination_clik.is_enabled():
@@ -121,9 +137,12 @@ def main():
     target_url = get_target_url()
     print(target_url)
     get_driver = get_pages_html(target_url)
-    parse_page(get_driver)
-    time.sleep(1)
-    get_driver.quit()
+    try:
+        parse_page(get_driver)
+        time.sleep(1)
+        get_driver.quit()
+    except Exception:
+        get_driver.quit()
 
 
 if __name__ == "__main__":
