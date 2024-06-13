@@ -53,6 +53,31 @@ def get_pages_html(url):
     return driver
 
 
+def get_items(cart):
+    id = cart.find_element(By.CSS_SELECTOR, '[data-test="product-id"]').text
+    name = cart.find_element(By.CSS_SELECTOR, '[data-test="product-name-link"]').text
+    price = cart.find_element(By.CSS_SELECTOR, '[data-test="product-price"]').text
+    link = cart.find_element(By.CSS_SELECTOR, '[data-test="product-name-link"]').get_attribute('href')
+    try:
+        discount = cart.find_element(By.CSS_SELECTOR, '[data-test="bonus-percent"]').text
+    except:
+        discount = None
+    try:
+        bonus = cart.find_element(By.CSS_SELECTOR, '[data-test="bonus-amount"]').text
+    except:
+        bonus = None
+    cart_dict = {
+        'id': id,
+        'name': name,
+        'price': price,
+        'link': link,
+        'discount': discount,
+        'bonus': bonus
+    }
+
+    return cart_dict
+
+
 def parse_page(driver):
     for i in range(1):  # Вы можете изменить количество страниц для парсинга
         pagination_frame = driver.find_element(By.CLASS_NAME, 'full')
@@ -62,20 +87,10 @@ def parse_page(driver):
         carts = body.find_elements(By.CSS_SELECTOR, '.catalog-item-regular-desktop')
 
         for cart in carts:
-            name = cart.find_element(By.CSS_SELECTOR, '[data-test="product-name-link"]').text
-            price = cart.find_element(By.CSS_SELECTOR, '[data-test="product-price"]').text
-            link = cart.find_element(By.CSS_SELECTOR, '[data-test="product-name-link"]').get_attribute('href')
-            try:
-                discount = cart.find_element(By.CSS_SELECTOR, '[data-test="bonus-percent"]').text
-            except:
-                discount = 'Скидка отсутствует'
-
-            try:
-                bonus = cart.find_element(By.CSS_SELECTOR, '[data-test="bonus-amount"]').text
-            except:
-                bonus = 'Бонусы отсутствуют'
-
-            print("*" * 10, name, price, discount, bonus, link)
+            """
+            сделать проверку на наличие бонусов
+            """
+            print(get_items(cart))
 
         try:
             pagination_clik = driver.find_element(By.CLASS_NAME, 'next')
@@ -89,10 +104,24 @@ def parse_page(driver):
             break
 
 
-def scroll_to_element(driver, element):
+def scroll_to_element(driver, element):  # как передивигать блоки
     actions = ActionChains(driver)
     actions.move_to_element(element)
     actions.perform()
+
+
+def select_func(values):
+    """
+    Логика выбора лучших вариантов цены и бонусов
+    """
+    pass
+
+def add_csv(values: dict):
+    """
+    Создаю csv файл и добавляю в него интересующие сочетания
+    в дальнейшем переношу все в базу данных
+    """
+    pass
 
 
 def main():
