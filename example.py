@@ -9,6 +9,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium_stealth import stealth
+from parse_page import get_pages_html, parse_page
+from request_parametrs import get_target_url, request_param
 
 BASE_URL = 'https://megamarket.ru'
 FLAG_CSV = 0
@@ -147,6 +149,7 @@ def add_csv(values: list, target: str):
         writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         if not FLAG_CSV:
             writer.writerow(['id', 'name', 'price', 'bonus', 'k', 'discount', 'link'])
+
         for value in values:
             writer.writerow(value.values())
 
